@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sketch</title>
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    <!-- ====== CDN mode ====== -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/p5@1.11.7/lib/p5.js"></script> -->
+    
+    <!-- <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+      }
+    }
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { PLYLoader } from 'three/addons/loaders/PLYLoader.js';
+
+        window.THREE = THREE;
+        window.PLYLoader = PLYLoader;
+    </script> -->
+
+    <!-- ====== Local module mode ====== -->
+    <script type="importmap">
+			{
+				"imports": {
+					"three": "./libraries/three/build/three.module.min.js",
+					"three/addons/": "./libraries/three/examples/jsm/"
+				}
+			}
+		</script>
+		
+    <script type="module">
+    import * as THREE from 'three';
+    import { PLYLoader } from 'three/addons/loaders/PLYLoader.js';
+	
+    // p5.js が非 module なのでグローバルへ橋渡し
+    window.THREE = THREE;
+    window.PLYLoader = PLYLoader;
+    </script>
+
+    <script src="libraries/p5/p5.min.js"></script>
+    
+  </head>
+
+  <body>
+    <script src="sketch.js"></script>
+  </body>
+</html>
