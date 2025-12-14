@@ -1,3 +1,9 @@
+## License Note
+
+The code is shared for learning purposes.
+All artworks and assets are not available for reuse.
+
+
 制作記録「秘密の画廊」2025/12/14 メリー
 ✨
 '|
