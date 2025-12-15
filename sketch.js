@@ -1,4 +1,4 @@
-let obj,obj2;
+let obj1,obj2;
 let myshader;
 let toggleButton;
 let isOpen = false;
@@ -8,25 +8,17 @@ let slider1,slider2,slider3,slider4;
 let entered = false;
 let enterButton;
 
-function setup() {
-  createCanvas(windowWidth, windowHeight,WEBGL);
-  frameRate(12);
-  pixelDensity(1);
-  noStroke();
-  
-  //myshader = createShader(vert, frag);
-  //shader(myshader);
-
-  let loader = new PLYLoader();
-  loader.load("data/roji.ply", (geometry) => {
+async function plyToP5geom(path,id){
+  const loader = new PLYLoader();
+  const geometry = await loader.loadAsync(path);
 	//console.log('loaded', geometry);
 	
     const positions = geometry.attributes.position.array;
     const colors = geometry.attributes.color ? geometry.attributes.color.array : null;
     const indices = geometry.index ? geometry.index.array : null;
     
-	obj = new p5.Geometry();
-    obj.gid = "roji";
+	const obj = new p5.Geometry();
+  obj.gid = id;
 	for(let i=0;i<positions.length;i+=3){
 	  let v = createVector(positions[i], positions[i+1], positions[i+2]);
 	  v.x *= -1;
@@ -34,46 +26,37 @@ function setup() {
       obj.vertices.push(v);
     }
 	
+	if(colors){
     for(let i=0;i<colors.length;i+=3){
 	  obj.vertexColors.push(linearToSRGB(colors[i]),
 	                        linearToSRGB(colors[i+1]),
 							            linearToSRGB(colors[i+2]),
 							            1.0);
-	}
+	  }
+  }
 	
+	if(indices){
     for(let i=0;i<indices.length;i+=3){
 	  obj.faces.push([indices[i], indices[i+1], indices[i+2]]);
     }
+  }
 	
-  });
+	return obj;
+}
+
+async function setup() {
+  createCanvas(windowWidth, windowHeight,WEBGL);
+  frameRate(12);
+  pixelDensity(1);
+  noStroke();
   
- loader.load("data/room2.ply", (geometry) => {
-    //console.log('loaded', geometry);
-    
-    const positions = geometry.attributes.position.array;
-    const colors = geometry.attributes.color ? geometry.attributes.color.array : null;
-    const indices = geometry.index ? geometry.index.array : null;
+  //myshader = createShader(vert, frag);
+  //shader(myshader);
+  
+  //console.log(THREE.REVISION);//181
 
-	obj2 = new p5.Geometry();
-    obj2.gid = "room";
-	for(let i=0;i<positions.length;i+=3){
-	  let v = createVector(positions[i], positions[i+1], positions[i+2]);
-	  v.x *= -1;
-	  v.mult(100);
-      obj2.vertices.push(v);
-    }
-
-	for(let i=0;i<colors.length;i+=3){
-	  obj2.vertexColors.push(linearToSRGB(colors[i]),
-	                        linearToSRGB(colors[i+1]),
-							            linearToSRGB(colors[i+2]),
-							            1.0);
-	}
-	
-    for(let i=0;i<indices.length;i+=3){
-		  obj2.faces.push([indices[i], indices[i+1], indices[i+2]]);
-    }
-  });
+  obj1 = await plyToP5geom("data/roji.ply","roji");
+  obj2 = await plyToP5geom("data/room2.ply","room");
   
   gui();
   
@@ -91,7 +74,7 @@ function draw() {
   
   if(entered){
     background("#C1E2FFFF");
-	camera(-550+slider3.value(),slider4.value(),150,
+	  camera(-550+slider3.value(),slider4.value(),150,
            0,slider2.value(),150+slider1.value(),
            0,0,-1);
 	  model(obj2);
@@ -100,7 +83,7 @@ function draw() {
     camera(-1100+slider3.value(),slider4.value(),150,
            0,slider2.value(),150+slider1.value(),
            0,0,-1);
-  	model(obj);
+  	model(obj1);
   }
   
 }
