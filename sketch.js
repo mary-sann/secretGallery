@@ -8,7 +8,7 @@ let slider1,slider2,slider3,slider4;
 let entered = false;
 let enterButton;
 
-function setup() {
+async function setup() {
   createCanvas(windowWidth, windowHeight,WEBGL);
   frameRate(12);
   pixelDensity(1);
@@ -18,7 +18,7 @@ function setup() {
   //shader(myshader);
 
   let loader = new PLYLoader();
-  loader.load("data/roji.ply", (geometry) => {
+  await loader.load("data/roji.ply", (geometry) => {
 	//console.log('loaded', geometry);
 	
     const positions = geometry.attributes.position.array;
@@ -47,7 +47,7 @@ function setup() {
 	
   });
   
-  loader.load("data/room2.ply", (geometry) => {
+ await loader.load("data/room2.ply", (geometry) => {
     //console.log('loaded', geometry);
     
     const positions = geometry.attributes.position.array;
