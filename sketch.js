@@ -7,6 +7,7 @@ let span1,span2,span3,span4;
 let slider1,slider2,slider3,slider4;
 let entered = false;
 let enterButton;
+let ready = false;
 
 async function plyToP5geom(path,id){
   const loader = new PLYLoader();
@@ -67,10 +68,13 @@ async function setup() {
   div.style('transform', 'translate(-50%, -50%)');
   div.style('font-size','40px');
   div.style('color','white');
+
+  ready = true;
 }
 
 function draw() {
   //background("#C1E2FFFF");
+  if (!ready) return;
   
   if(entered){
     background("#C1E2FFFF");
