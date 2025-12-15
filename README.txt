@@ -10,6 +10,7 @@ All artworks and assets are not available for reuse.
 |
 
 このサイトは自分の作品を飾るために制作した3dの画廊空間です。
+URL:https://mary-sann.github.io/secretGallery/
 
 *現在の工事状況
 入口の扉と部屋を１つ実験的に配置中。
