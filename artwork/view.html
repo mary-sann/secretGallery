@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+	  <link rel="stylesheet" href="../css/view.css" />
+    <title>電獏堂</title>
+	<script src="../libraries/p5/p5.min.js"></script>
+  </head>
+  <body>
+    <p><a href="../catalog.html">←図録に戻る</a></p>
+    <p>
+    <!-- <a href="/catalog.html">←展示室に戻る</a> -->
+      ←展示室に戻る
+    </p>
+    <img src="../data/img4.png" width="600" alt="ロゴ画像">
+	<p>「街の地下であっちこっちに伸びてるもの」</p>
+      <p>  ランダムウォークを使った配管<br>
+        サイト入口にも使いました<br>
+        blenderでチューブ化してペイントソフトで色塗り</p>
+    <p>◼︎processingコード</p>
+    <p style="font-weight: bold;">RandomWalk3d</p>
+    <div id="container" style="position:relative;"></div>
+    <script>
+      let pde,pde2,pde3;
+      function preload(){
+        pde = loadStrings('../processing/RandomWalk3d/RandomWalk3d.pde');
+        pde2 = loadStrings('../processing/RandomWalk3d/Walker.pde');
+        pde3 = loadStrings('../processing/RandomWalk3d/Pipe.pde');
+      }
+      function setup() {
+        noCanvas();
+    
+        for(let line of pde){
+          const p = createP(line);
+          p.parent('container');
+          //p.style("white-space", "pre");
+        }
+        for(let line of pde2){
+          const p = createP(line);
+          p.parent('container');
+          //p.style("white-space", "pre");
+        }
+        for(let line of pde3){
+          const p = createP(line);
+          p.parent('container');
+          //p.style("white-space", "pre");
+        }
+      }
+      
+      //ver2.0のp５からこれ
+      // async function setup() {
+      //   noCanvas();
+      //   let pde = await loadStrings('../processing/test.pde');
+    
+      //   for(let line of pde){
+      //     const p = createP(line);
+      //     p.parent('container');
+      // }
+      //  }
+
+    </script>
+
+  </body>
+</html>

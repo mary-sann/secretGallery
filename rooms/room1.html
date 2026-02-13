@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>電獏堂</title>
+
+    <link rel="stylesheet" type="text/css" href="../css/style.css">
+
+    <!-- ====== CDN mode ====== -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/p5@1.11.7/lib/p5.js"></script> -->
+    
+    <!-- <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+      }
+    }
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { PLYLoader } from 'three/addons/loaders/PLYLoader.js';
+
+        window.THREE = THREE;
+        window.PLYLoader = PLYLoader;
+    </script> -->
+
+    <!-- ====== Local module mode ====== -->
+    <script type="importmap">
+			{
+				"imports": {
+					"three": "../libraries/three/build/three.module.min.js",
+					"three/addons/": "../libraries/three/examples/jsm/"
+				}
+			}
+		</script>
+		
+    <script type="module">
+    import * as THREE from 'three';
+    import { PLYLoader } from 'three/addons/loaders/PLYLoader.js';
+	
+    window.THREE = THREE;
+    window.PLYLoader = PLYLoader;
+    </script>
+
+    <script src="../libraries/p5/p5.min.js"></script>
+    <!-- <script src="../libraries/gui/lil-gui.min.js"></script> -->
+    <script src="../libraries/gui/dat.gui.min.js"></script>
+	  <script src="../libraries/p5/addScreenPositionFunction.js"></script>
+    
+  </head>
+
+  <body>
+	<h1>
+    隠れ家画廊 電獏堂
+    <img src="../data/電獏堂ロゴ.jpg" width="90" alt="ロゴ画像">
+  </h1>
+	<p>
+    <a href="../index.html">入口にもどる</a> | 
+      <a href="../about.html">サイトについて</a> | 
+      <a href="../information.html">おしらせ</a> | 
+      <a href="../catalog.html">図録</a>
+  </p>
+    <script src="../js/room1.js"></script>
+
+  </body>
+</html>
