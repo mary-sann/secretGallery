@@ -56,7 +56,7 @@ async function setup() {
   //shader(myshader);
   
   //console.log(THREE.REVISION);//181
-  geom = await plyToP5geom("data/roji.ply","roji");
+  geom = await plyToP5geom("data/roji.ply","roji");//パスがね、jsを読み込んでるhtml基準の相対だよ
   
   //camera
   cam = createCamera();
