@@ -32,17 +32,20 @@
         noCanvas();
     
         for(let line of pde){
-          const p = createP(line);
+          const p = createP("");
+		  p.elt.textContent = line;
           p.parent('container');
           //p.style("white-space", "pre");
         }
         for(let line of pde2){
-          const p = createP(line);
+          const p = createP("");
+		  p.elt.textContent = line;
           p.parent('container');
           //p.style("white-space", "pre");
         }
         for(let line of pde3){
-          const p = createP(line);
+          const p = createP("");
+		  p.elt.textContent = line;
           p.parent('container');
           //p.style("white-space", "pre");
         }
