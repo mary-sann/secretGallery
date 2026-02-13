@@ -56,7 +56,7 @@ async function setup() {
   //shader(myshader);
   
   //console.log(THREE.REVISION);//181
-  geom = await plyToP5geom("data/roji.ply","roji");
+  geom = await plyToP5geom("../data/roji.ply","roji");
   
   //camera
   cam = createCamera();
@@ -94,7 +94,7 @@ async function setup() {
   p.style('color','white');
 
   //<a>
-  const a = createA('rooms/room1.html', 'はいる');
+  const a = createA('../rooms/room1.html', 'はいる');
   a.parent(wrapper);
   a.style('font-size','20px');
   a.position(width*0.5-a.size().width*0.5,height*0.75-a.size().height*0.5);
