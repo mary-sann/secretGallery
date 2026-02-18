@@ -40,6 +40,10 @@ const param = {
 let wrapper;
 
 document.oncontextmenu = (e) => { e.preventDefault(); }
+document.addEventListener('focusin', e => {
+  console.log('focusin →', e.target.tagName);
+});
+
 
 async function setup() {
   //canvas設定
@@ -87,33 +91,6 @@ async function setup() {
   }
   
   //dom
-  //<p>
-  const p = createP(`工事中⛑️🚧🪏<br>
-                     まだこの部屋までしかありません<br>
-					 今までたくさんの3dジオメトリを<br>
-					 processingで作ってきたので<br>
-					 おもしろい部屋がいっぱいできそうです<br>
-					 お楽しみにദി >⩊<︎︎ ͡ 𐦯<br>
-					 `);
-  p.parent(wrapper);
-  p.style('width', 'fit-content');
-  //p.style('height', 'fit-content');
-  //p.style('font-size','20px');
-  p.position(width*0.5-p.size().width*0.5,height*0.5-p.size().height*0.5);
-  p.style('color','white');
-
-  //<a>
-  const a = createA('../index.html', 'もどる');
-  a.parent(wrapper);
-  a.style('font-size','20px');
-  a.position(width*0.5-a.size().width*0.5,height*0.75-a.size().height*0.5);
-  a.style('color','white');
-  
-  //書き置き
-  let memo1 = '説明を見る';
-  let memo2 = 'これは説明文です。<br>クリックすると閉じます。';
-  memoGUI = getMyGUI(memo1,memo2);
-  memoGUI.btn.style('color','white');
   //カメラ説明
   let guide1 = '🎥カメラの説明を見る';
   let guide2 = `◼︎マウス🖱️🐭<br>
@@ -133,7 +110,35 @@ async function setup() {
 	  camGuide.btn.hide();
 	  camGuide.desc.hide();
   }
-  
+
+  //書き置き
+  let memo1 = '説明を見る';
+  let memo2 = 'これは説明文です。<br>クリックすると閉じます。';
+  memoGUI = getMyGUI(memo1,memo2);
+  memoGUI.btn.style('color','white');
+
+  //<p>
+  const p = createP(`工事中⛑️🚧🪏<br>
+                     まだこの部屋までしかありません<br>
+					 今までたくさんの3dジオメトリを<br>
+					 processingで作ってきたので<br>
+					 おもしろい部屋がいっぱいできそうです<br>
+					 お楽しみにദി >⩊<︎︎ ͡ 𐦯<br>
+					 `);
+  p.parent(wrapper);
+  p.style('width', 'fit-content');
+  //p.style('height', 'fit-content');
+  //p.style('font-size','20px');
+  p.position(width*0.5-p.size().width*0.5,height*0.5-p.size().height*0.5);
+  //p.center();
+  p.style('color','white');
+
+  //<a>
+  const a = createA('../index.html', 'もどる');
+  a.parent(wrapper);
+  a.style('font-size','20px');
+  a.position(width*0.5-a.size().width*0.5,height*0.75-a.size().height*0.5);
+  a.style('color','white');
 
   ready = true;
 }
@@ -310,12 +315,18 @@ class MyGUI{
 		this.desc = createButton();
     //this.desc = createDiv();
 		this.desc.hide();
-		
-		this.btn.mousePressed(() => {
+    
+    //mousePressed(()を使ったイベントはキーをはじく
+    //これでもいける、mouseClickedがこれと同じのをやってる
+    // this.btn.elt.addEventListener('click', () => {});
+    // this.desc.elt.addEventListener('click', () => {});
+
+    //mousePressedは.addEventListener('mousedown')でmouseClickedが'click'になってる
+    this.btn.mouseClicked(() => {
           this.btn.hide();
           this.desc.show();
         });
-        this.desc.mousePressed(() => {
+    this.desc.mouseClicked(() => {
           this.desc.hide();
           this.btn.show();
         });
@@ -344,23 +355,24 @@ function getMyGUI(html1,html2) {
   gui.btn.parent(wrapper);
   gui.btn.style('border', 'none');
   gui.btn.style('background', 'none');
-  gui.btn.style('outline', 'none'); 
+  //gui.btn.style('outline', 'none'); //tabのフォーカス枠が消えちゃう
   gui.btn.style('padding', '0');
   gui.btn.style('margin', '0');
   gui.btn.style('font-weight', '500');
   gui.btn.style('font-family', '"Hiragino Sans", sans-serif');
   gui.btn.style('font-size', ' 16px');
+  gui.btn.style('color','black');
   
   gui.desc.html(html2);
   gui.desc.parent(wrapper);
   gui.desc.style('width', 'fit-content');
   gui.desc.style('border', '1px solid #000');
   gui.desc.style('border-radius', '6px');
-
   gui.desc.style('background', '#f2f2f2');
   gui.desc.style('text-align', 'left');
   gui.desc.style('font-family', '"Hiragino Sans", sans-serif');
   gui.desc.style('font-size', ' 16px'); 
+  gui.desc.style('color','black');
 
   gui.setSize();
 
