@@ -40,10 +40,6 @@ const param = {
 let wrapper;
 
 document.oncontextmenu = (e) => { e.preventDefault(); }
-document.addEventListener('focusin', e => {
-  console.log('focusin →', e.target.tagName);
-});
-
 
 async function setup() {
   //canvas設定
