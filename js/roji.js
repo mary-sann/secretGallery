@@ -77,6 +77,30 @@ async function setup() {
     setCamera(debugCam);
     this.canvas.onwheel = () => true;
   }
+  
+  //dom
+  //カメラ説明
+  let guide1 = '🎥カメラの説明を見る';
+  let guide2 = `◼︎マウス🖱️🐭<br>
+                左ドラック視点移動←↑↓→<br>
+				ホイール前後移動▲▼<br>
+				右ドラックカメラ移動◁△▽▷<br>
+                ◼︎タッチ👆<br>
+				1本指視点移動←↑↓→<br>
+				2本指で上下になぞる前後移動▲▼<br>
+				3本指カメラ移動◁△▽▷<br>
+				クリックで閉じる`;
+  camGuide = getMyGUI(guide1,guide2);
+  camGuide.btn.position(0,0);
+	camGuide.desc.position(0,0);
+	camGuide.btn.style('color','black');
+  camGuide.btn.style('text-shadow',
+  '-1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff'
+  );
+  if(isDebugCam){
+	  camGuide.btn.hide();
+	  camGuide.desc.hide();
+  }
 
   //<p>
   const p = createP(`工事中⛑️🚧🪏<br>
@@ -100,28 +124,7 @@ async function setup() {
   a.position(width*0.5-a.size().width*0.5,height*0.75-a.size().height*0.5);
   a.style('color','black');
 
-  //カメラ説明
-  let guide1 = '🎥カメラの説明を見る';
-  let guide2 = `◼︎マウス🖱️🐭<br>
-                左ドラック視点移動←↑↓→<br>
-				ホイール前後移動▲▼<br>
-				右ドラックカメラ移動◁△▽▷<br>
-                ◼︎タッチ👆<br>
-				1本指視点移動←↑↓→<br>
-				2本指で上下になぞる前後移動▲▼<br>
-				3本指カメラ移動◁△▽▷<br>
-				クリックで閉じる`;
-  camGuide = getMyGUI(guide1,guide2);
-  camGuide.btn.position(0,0);
-	camGuide.desc.position(0,0);
-	camGuide.btn.style('color','black');
-  camGuide.btn.style('text-shadow',
-  '-1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff'
-  );
-  if(isDebugCam){
-	  camGuide.btn.hide();
-	  camGuide.desc.hide();
-  }
+  
 
   ready = true;
 }
@@ -163,7 +166,7 @@ async function plyToP5geom(path,id){
       obj.vertices.push(v);
     }
 	
-	//geometry.attributes.color.convertLinearToSRGB();
+	//geometry.attributes.color.convertLinearToSRGB();//threejsにあった、知らんかった〜
 	if(colors){
     for(let i=0;i<colors.length;i+=3){
 	  obj.vertexColors.push(linearToSRGB(colors[i]),
@@ -298,14 +301,14 @@ class MyGUI{
     //this.desc = createDiv();
 		this.desc.hide();
 		
-		this.btn.mousePressed(() => {
+		this.btn.mouseClicked(() => {
           this.btn.hide();
           this.desc.show();
         });
-        this.desc.mousePressed(() => {
-          this.desc.hide();
-          this.btn.show();
-        });
+    this.desc.mouseClicked(() => {
+      this.desc.hide();
+      this.btn.show();
+    });
 
     this.btnSize;
     this.descSize;
@@ -331,23 +334,24 @@ function getMyGUI(html1,html2) {
   gui.btn.parent(wrapper);
   gui.btn.style('border', 'none');
   gui.btn.style('background', 'none');
-  gui.btn.style('outline', 'none'); 
+  //gui.btn.style('outline', 'none'); 
   gui.btn.style('padding', '0');
   gui.btn.style('margin', '0');
   gui.btn.style('font-weight', '500');
   gui.btn.style('font-family', '"Hiragino Sans", sans-serif');
   gui.btn.style('font-size', ' 16px'); 
+  gui.btn.style('color','black');
 
   gui.desc.html(html2);
   gui.desc.parent(wrapper);
   gui.desc.style('width', 'fit-content');
   gui.desc.style('border', '1px solid #000');
   gui.desc.style('border-radius', '6px');
-
   gui.desc.style('background', '#f2f2f2');
   gui.desc.style('text-align', 'left');
   gui.desc.style('font-family', '"Hiragino Sans", sans-serif');
   gui.desc.style('font-size', ' 16px'); 
+  gui.desc.style('color','black');
 
   gui.setSize();
 
