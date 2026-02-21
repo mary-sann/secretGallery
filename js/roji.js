@@ -241,20 +241,23 @@ function myCamera() {
       let dy = y * 0.001;
       let vx = config.pan + dx;
       let vy = config.tilt + dy;
-      //let target = createVector(cam.centerX,cam.centerY,cam.centerZ);
       if(config.PAN_MIN < vx && vx < config.PAN_MAX){
         config.pan += dx;
         //cam.pan(dx);
-        let target = createVector(cam.centerX,cam.centerY,cam.centerZ);
-        target.add(-tan(dx),0,0);//tanじゃあ危なすぎる
-        cam.lookAt(target.x,target.y,target.z);
+        _pan(cam,dx);
+
+        // let target = createVector(cam.centerX,cam.centerY,cam.centerZ);
+        // target.add(-tan(dx),0,0);//tanじゃあ危なすぎる
+        // cam.lookAt(target.x,target.y,target.z);
       }
       if(config.TILT_MIN < vy && vy < config.TILT_MAX){
         config.tilt += dy;	
         //cam.tilt(-dy);
-        let target = createVector(cam.centerX,cam.centerY,cam.centerZ);
-        target.add(0,-tan(dy),0);
-        cam.lookAt(target.x,target.y,target.z);
+        _tilt(cam,-dy);
+
+        // let target = createVector(cam.centerX,cam.centerY,cam.centerZ);
+        // target.add(0,-tan(dy),0);
+        // cam.lookAt(target.x,target.y,target.z);
       }
     }
 	  if(mouseButton === RIGHT || touches.length === 3){
@@ -308,6 +311,63 @@ function getMove(cam,x,y,z) {
 	return createVector(cam.eyeX + dx[0] + dy[0] + dz[0],
                         cam.eyeY + dx[1] + dy[1] + dz[1],
                         cam.eyeZ + dx[2] + dy[2] + dz[2]);
+}
+
+function _pan(cam,amount){
+  const local = cam._getLocalAxes();
+  my_rotateView(amount, local.y[0], local.y[1], local.y[2]);
+}
+
+function _tilt(cam,amount){
+  const local = cam._getLocalAxes();
+  my_rotateView(amount, local.x[0], local.x[1], local.x[2]);
+}
+
+function my_rotateView(a, x, y, z) {
+  let centerX = cam.centerX;
+  let centerY = cam.centerY;
+  let centerZ = cam.centerZ;
+
+  // move center by eye position such that rotation happens around eye position
+  centerX -= cam.eyeX;
+  centerY -= cam.eyeY;
+  centerZ -= cam.eyeZ;
+
+  const rotation = p5.Matrix.identity(this._renderer._pInst);
+  rotation.rotate(this._renderer._pInst._toRadians(a), x, y, z);
+
+  // Apply the rotation matrix to the center vector
+  //eslint-disable max-len 
+  const rotatedCenter = [
+    centerX * rotation.mat4[0] + centerY * rotation.mat4[4] + centerZ * rotation.mat4[8],
+    centerX * rotation.mat4[1] + centerY * rotation.mat4[5] + centerZ * rotation.mat4[9],
+    centerX * rotation.mat4[2] + centerY * rotation.mat4[6] + centerZ * rotation.mat4[10]
+  ];
+  //eslint-enable max-len 
+
+  // Translate the rotated center back to world coordinates
+  rotatedCenter[0] += cam.eyeX;
+  rotatedCenter[1] += cam.eyeY;
+  rotatedCenter[2] += cam.eyeZ;
+
+  // Rotate the up vector to keep the correct camera orientation
+  // eslint-disable max-len 
+  const upX = cam.upX * rotation.mat4[0] + cam.upY * rotation.mat4[4] + cam.upZ * rotation.mat4[8];
+  const upY = cam.upX * rotation.mat4[1] + cam.upY * rotation.mat4[5] + cam.upZ * rotation.mat4[9];
+  const upZ = cam.upX * rotation.mat4[2] + cam.upY * rotation.mat4[6] + cam.upZ * rotation.mat4[10];
+  // eslint-enable max-len 
+
+  cam.camera(
+    cam.eyeX,
+    cam.eyeY,
+    cam.eyeZ,
+    rotatedCenter[0],
+    rotatedCenter[1],
+    rotatedCenter[2]
+    //,upX,
+    // upY,
+    // upZ
+  );
 }
 
 function setDebugCam() {
