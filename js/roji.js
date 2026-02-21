@@ -1,42 +1,46 @@
+//キャンバス
 let geom;
 let myshader;
 let ready = false;
-const param = {
-        lookAt_TB: 0.0,
-		lookAt_RL: 0.0,
-		pos_FB: 0.0,
-		pos_RL: 0.0,
-        explode: function () {
-          alert('◼︎カメラのせつめい\n下のスライダーを操作してカメラの向きを変えたり移動できます。\n\n△▽:視線上下\n◁▷:視線左右\n↑↓:移動前後\n←→:移動左右\n');
-        },
-		reset: () => {}
-  };
-  
+let wrapper;
+//カメラ  
 let cam;
 const camEye = {x:0,y:-150,z:1100};
 const camLook = {x:0,y:-150,z:0};
-let camGuide;
 const config = {
   pan : 0,
   tilt : 0,
-  moveX : 0,
-  moveY : 0,
-  moveZ : 0,
-  dist : 0,
   PAN_MIN : -0.9,
   PAN_MAX :  0.9,
   TILT_MIN : -0.5,
   TILT_MAX :  0.5,
-  MOVE_X_MIN :  -50,
-  MOVE_X_MAX :  50,
-  MOVE_Y_MIN :  -50,
-  MOVE_Y_MAX :  50,
-  MOVE_Z_MIN :  -300,
-  MOVE_Z_MAX :  100
+  sens : 0.5
 };
+const boundingBox = {
+	X_MIN : -100,
+	X_MAX : 100,
+	Y_MIN : -250,
+	Y_MAX : -50,
+	Z_MIN : 600,
+	Z_MAX : 1200
+};
+let bBoxShape;
+let isBoundingBox = false;
+//デバックカメラ
 let debugCam;
 let isDebugCam = false;
-let wrapper;
+const param = {
+    lookAt_TB: 0.0,
+		lookAt_RL: 0.0,
+		pos_FB: 0.0,
+		pos_RL: 0.0,
+    explode: function () {
+      alert('◼︎カメラのせつめい\n下のスライダーを操作してカメラの向きを変えたり移動できます。\n\n△▽:視線上下\n◁▷:視線左右\n↑↓:移動前後\n←→:移動左右\n');
+    },
+		reset: () => {}
+  };
+//gui
+let camGuide;
 
 document.oncontextmenu = (e) => { e.preventDefault(); }
 
@@ -71,25 +75,29 @@ async function setup() {
   this.canvas.style['touch-action'] = 'none';
   
   //debugCamera
-  isDebugCam = false;
   if(isDebugCam){
     setDebugCam();
     setCamera(debugCam);
     this.canvas.onwheel = () => true;
   }
-  
+
+  //バウンディングボックス表示用
+  if(isBoundingBox){
+    bBoxShape = getBoundingBox(boundingBox);
+  }
+
   //dom
   //カメラ説明
   let guide1 = '🎥カメラの説明を見る';
-  let guide2 = `◼︎マウス🖱️🐭<br>
-                左ドラック視点移動←↑↓→<br>
-				ホイール前後移動▲▼<br>
-				右ドラックカメラ移動◁△▽▷<br>
-                ◼︎タッチ👆<br>
-				1本指視点移動←↑↓→<br>
-				2本指で上下になぞる前後移動▲▼<br>
-				3本指カメラ移動◁△▽▷<br>
-				クリックで閉じる`;
+  let guide2 =  '◼︎マウス🖱️🐭<br>'
+                +'左ドラック視点移動←↑↓→<br>'
+				        +'ホイール前後移動▲▼<br>'
+				        +'右ドラックカメラ移動◁△▽▷<br>'
+                +'◼︎タッチ👆<br>'
+				        +'1本指視点移動←↑↓→<br>'
+				        +'2本指で上下になぞる前後移動▲▼<br>'
+				        +'3本指カメラ移動◁△▽▷<br>'
+				        +'クリックで閉じる';
   camGuide = getMyGUI(guide1,guide2);
   camGuide.btn.position(0,0);
 	camGuide.desc.position(0,0);
@@ -103,13 +111,13 @@ async function setup() {
   }
 
   //<p>
-  const p = createP(`工事中⛑️🚧🪏<br>
-                     電獏堂へようこそ<br>
-					 ここは3Dの画廊空間サイトです<br>
-					 マウスやタッチで操作ができます<br>
-					 これから部屋をどんどん増やしていって<br>
-					 探索ゲームを作る予定へ向け工事中です<br>
-					 🐏`);
+  const p = createP('工事中⛑️🚧🪏<br>'
+                     +'電獏堂へようこそ<br>'
+					           +'ここは3Dの画廊空間サイトです<br>'
+					           +'マウスやタッチで操作ができます<br>'
+					           +'これから部屋をどんどん増やしていって<br>'
+					           +'探索ゲームを作る予定へ向け工事中です<br>'
+					           +'🐏');
   p.parent(wrapper);
   p.style('width', 'fit-content');
   //p.style('height', 'fit-content');//高さは基本自動らしい
@@ -124,8 +132,6 @@ async function setup() {
   a.position(width*0.5-a.size().width*0.5,height*0.75-a.size().height*0.5);
   a.style('color','black');
 
-  
-
   ready = true;
 }
 
@@ -136,16 +142,25 @@ function draw() {
 	background(210,228,234);
 	
 	myCamera();
+  //orbitControl();
 	//デバック用
   if(isDebugCam){
     useDebugCam();	
   }
-	
+
+  //カメラの領域表示
+  if(isBoundingBox){
+    stroke(0);
+    noFill();
+    model(bBoxShape);
+    fill(255);//適当な数字入れると色、元に戻る
+	}
+
 	push();
-    rotateY(PI/2);
-    rotateX(PI/2)
-    model(geom);
-    pop();
+  rotateY(PI/2);
+  rotateX(PI/2)
+  model(geom);
+  pop();
 }
 
 async function plyToP5geom(path,id){
@@ -153,9 +168,9 @@ async function plyToP5geom(path,id){
   const geometry = await loader.loadAsync(path);
 	//console.log('loaded', geometry);
 	
-    const positions = geometry.attributes.position.array;
-    const colors = geometry.attributes.color ? geometry.attributes.color.array : null;
-    const indices = geometry.index ? geometry.index.array : null;
+  const positions = geometry.attributes.position.array;
+  const colors = geometry.attributes.color ? geometry.attributes.color.array : null;
+  const indices = geometry.index ? geometry.index.array : null;
     
 	const obj = new p5.Geometry();
     obj.gid = id;
@@ -192,12 +207,34 @@ function linearToSRGB(c) {
     : 1.055 * Math.pow(c, 1/2.4) - 0.055;
 }
 
+function getBoundingBox(bBox) {
+  let w = bBox.X_MAX - bBox.X_MIN;
+  let h = bBox.Y_MAX - bBox.Y_MIN;
+  let d = bBox.Z_MAX - bBox.Z_MIN;
+  let x = bBox.X_MIN + w/2;
+  let y = bBox.Y_MIN + h/2;
+  let z = bBox.Z_MIN + d/2;
+	
+  beginGeometry();
+  
+  noFill();
+  stroke(0);
+  strokeWeight(1);
+  push();
+  translate(x,y,z);
+  box(w,h,d);
+  pop();
+  
+  let shape = endGeometry();
+
+  return shape;
+}
+
 function myCamera() {
-	//キーボードは通常のサイト操作にとっときたいから出来るだけ使いたくない
-    //let x = movedX;//movedX = mouseX - pmouseX.こっちうごかん
+  //let x = movedX;//movedX = mouseX - pmouseX.こっちうごかん
 	//let y = movedY;
-    let x = mouseX - pmouseX;
-    let y = mouseY - pmouseY;
+  let x = mouseX - pmouseX;
+  let y = mouseY - pmouseY;
 	if(mouseIsPressed){
     if(mouseButton === LEFT || touches.length === 1){
         let dx = x * 0.001;
@@ -205,50 +242,70 @@ function myCamera() {
 		    let vx = config.pan + dx;
 	      let vy = config.tilt + dy;
 		    let target = createVector(cam.centerX,cam.centerY,cam.centerZ);
-		    let pos = createVector(cam.eyeX,cam.eyeY,cam.eyeZ);
-		    let m = p5.Vector.sub(target, pos).mag();
 	      if(config.PAN_MIN < vx && vx < config.PAN_MAX){
 			    config.pan += dx;
-			    //cam.pan(dx);//なんか動かしてると軸が斜めになる
-				target.add(-tan(dx)*m,0,0);
-				cam.lookAt(target.x,target.y,target.z);
+			    //cam.pan(dx);
+				  target.add(-tan(dx),0,0);
+				  cam.lookAt(target.x,target.y,target.z);
 	      }
 	      if(config.TILT_MIN < vy && vy < config.TILT_MAX){
-		        config.tilt += dy;	
-				//cam.tilt(-dy);//こっちも斜める
-				target.add(0,-tan(dy)*m,0);
-				cam.lookAt(target.x,target.y,target.z);
+		      config.tilt += dy;	
+				  //cam.tilt(-dy);
+				  target.add(0,-tan(dy),0);
+				  cam.lookAt(target.x,target.y,target.z);
 	      }
-	  }
+    }
 	  if(mouseButton === RIGHT || touches.length === 3){
-		let vx = config.moveX + x;
-        let vy = config.moveY + y;
-        if(config.MOVE_X_MIN < vx && vx < config.MOVE_X_MAX){
-			config.moveX += x;
-			cam.move(-x,0,0);
-	    }		
-        if(config.MOVE_Y_MIN < vy && vy < config.MOVE_Y_MAX){
-			config.moveY += y;
-			cam.move(0,-y,0);
-	    }
+      let mvX = getMove(cam,-x,0,0);
+      if(checkBBox(mvX)){
+        cam.move(-x,0,0);
       }
-	  if(touches.length === 2){
-		let vz = config.moveZ + y;
-		if(config.MOVE_Z_MIN < vz && vz < config.MOVE_Z_MAX){
-			config.moveZ += y;
-			cam.move(0,0,y);
-	    }
+      let mvY = getMove(cam,0,-y,0);
+      if(checkBBox(mvY)){
+        cam.move(0,-y,0);
       }
     }
+	  if(touches.length === 2){
+      let dy = y * config.sens;
+		  let mv = getMove(cam,0,0,dy);
+      if(checkBBox(mv)){
+        cam.move(0,0,dy);
+      }
+    }
+  }
 }
 
 function mouseWheel(e) {
-  let vz = config.moveZ + e.delta;
-		if(config.MOVE_Z_MIN < vz && vz < config.MOVE_Z_MAX){
-			config.moveZ += e.delta;
-			cam.move(0,0,e.delta);
-	    }
-  //return false; //ページスクロール防止
+  let d = e.delta * config.sens;
+	let mv = getMove(cam,0,0,d);
+  if(checkBBox(mv)){
+    cam.move(0,0,d);
+  }
+  //return false; // ページスクロール防止
+}
+
+function checkBBox(v){
+  if(boundingBox.X_MIN < v.x && v.x < boundingBox.X_MAX){
+    if(boundingBox.Y_MIN < v.y && v.y < boundingBox.Y_MAX){
+      if(boundingBox.Z_MIN < v.z && v.z < boundingBox.Z_MAX){
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+//p5.Camera.js/.move()コピペしてきた
+function getMove(cam,x,y,z) {
+    const local = cam._getLocalAxes();
+	
+    const dx = [local.x[0] * x, local.x[1] * x, local.x[2] * x];
+    const dy = [local.y[0] * y, local.y[1] * y, local.y[2] * y];
+    const dz = [local.z[0] * z, local.z[1] * z, local.z[2] * z];
+    
+	return createVector(cam.eyeX + dx[0] + dy[0] + dz[0],
+                        cam.eyeY + dx[1] + dy[1] + dz[1],
+                        cam.eyeZ + dx[2] + dy[2] + dz[2]);
 }
 
 function setDebugCam() {
@@ -295,16 +352,16 @@ class MyGUI{
     //buttonはentar/spaceキーで操作できる(<a>もできる)、でもフォントの設定が他と違う、変わる
     //divはキー操作できないけどフォントの設定はサイトから引き継ぎ
     //uiならbuttonの方がいいかもな...
-	//divは隠しリンクや透明ボタンに有効かもね、tabで見つかると困るもの
+	  //divは隠しリンクや透明ボタンに有効かもね、tabで見つかると困るもの
 		this.btn = createButton();
 		this.desc = createButton();
     //this.desc = createDiv();
 		this.desc.hide();
 		
 		this.btn.mouseClicked(() => {
-          this.btn.hide();
-          this.desc.show();
-        });
+      this.btn.hide();
+      this.desc.show();
+    });
     this.desc.mouseClicked(() => {
       this.desc.hide();
       this.btn.show();
