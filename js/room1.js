@@ -343,15 +343,15 @@ function getMove(cam,x,y,z) {
 //これもpan()コピペしてきた
 function _pan(cam,amount){
   const local = cam._getLocalAxes();
-  my_rotateView(amount, local.y[0], local.y[1], local.y[2]);
+  my_rotateView(cam, amount, local.y[0], local.y[1], local.y[2]);
 }
 
 function _tilt(cam,amount){
   const local = cam._getLocalAxes();
-  my_rotateView(amount, local.x[0], local.x[1], local.x[2]);
+  my_rotateView(cam, amount, local.x[0], local.x[1], local.x[2]);
 }
 
-function my_rotateView(a, x, y, z) {
+function my_rotateView(cam, a, x, y, z) {
   let centerX = cam.centerX;
   let centerY = cam.centerY;
   let centerZ = cam.centerZ;
