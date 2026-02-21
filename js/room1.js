@@ -82,7 +82,7 @@ async function setup() {
   let center = eye.copy().add(look);
   cam.setPosition(eye.x,eye.y,eye.z);
   cam.lookAt(center.x,center.y,center.z);
-  cam,perspective(2*atan(height/2/800), width/height, 0.1*800, 10*800)
+  //cam.perspective(2*atan(height/2/800), width/height, 0.1*800, 10*800)
   
   this.canvas.onwheel = () => false;
   this.canvas.style['touch-action'] = 'none';
