@@ -268,16 +268,18 @@ function myCamera() {
       let dy = y * 0.001;
       let vx = config.pan + dx;
       let vy = config.tilt + dy;
-      let target = createVector(cam.centerX,cam.centerY,cam.centerZ);
+      //let target = createVector(cam.centerX,cam.centerY,cam.centerZ);
       if(config.PAN_MIN < vx && vx < config.PAN_MAX){
         config.pan += dx;
         //cam.pan(dx);
-        target.add(-tan(dx),0,0);
+        let target = createVector(cam.centerX,cam.centerY,cam.centerZ);
+        target.add(-tan(dx),0,0);//tanじゃあ危なすぎる
         cam.lookAt(target.x,target.y,target.z);
       }
       if(config.TILT_MIN < vy && vy < config.TILT_MAX){
         config.tilt += dy;	
         //cam.tilt(-dy);
+        let target = createVector(cam.centerX,cam.centerY,cam.centerZ);
         target.add(0,-tan(dy),0);
         cam.lookAt(target.x,target.y,target.z);
       }
