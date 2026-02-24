@@ -346,6 +346,7 @@ function _pan(cam,amount){
   my_rotateView(cam, amount, local.y[0], local.y[1], local.y[2]);
 }
 
+//upY無視してるから角度PI/2を超えるとまずいです、制限つけて
 function _tilt(cam,amount){
   const local = cam._getLocalAxes();
   my_rotateView(cam, amount, local.x[0], local.x[1], local.x[2]);
