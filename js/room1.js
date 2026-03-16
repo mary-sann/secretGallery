@@ -177,7 +177,6 @@ function draw() {
   rotateY(PI/2);
   rotateX(PI/2)
   model(geom);
-  scale(3);
   pop();
 
 	
